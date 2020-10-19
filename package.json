@@ -1,0 +1,25 @@
+{
+  "name": "cameo",
+  "version": "0.0.1",
+  "description": "Integrate DID to your DApp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stanly-johnson/cameo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stanly-johnson/cameo/issues"
+  },
+  "homepage": "https://github.com/stanly-johnson/cameo#readme",
+  "dependencies": {
+    "@ceramicnetwork/ceramic-common": "^0.10.1",
+    "@ceramicnetwork/ceramic-http-client": "^0.6.5",
+    "@ceramicstudio/idx": "^0.2.1",
+    "@ceramicstudio/idx-tools": "^0.2.2"
+  }
+}
