@@ -18,7 +18,7 @@ class App extends Component {
     idw : "",
     ceramic_url : "",
     did : "",
-    seed : "06be7d9853096fca06d6da9268a8a66ecaab2a7249ccd63c70fead97aafefa01", // need to change from default value
+    seed : "", // need to change from default value
     name : "",
     showMainLoader : true,
     showSubLoader : false
@@ -34,13 +34,13 @@ class App extends Component {
     this.setState({ ceramic_url });
   }
 
-  generateIdentityWallet = async () => {
-    if (this.state.seed === undefined){
-      return;
-    }
-    //convert seed to uint8array
-    // test with 06be7d9853096fca06d6da9268a8a66ecaab2a7249ccd63c70fead97aafefa02
-    let seedBuffer = Buffer.from(this.state.seed, 'hex');
+  genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+
+
+  generateIdentityWallet = async (seed) => {
+    // create new did from random seed
+    let randomSeed = seed ? seed : this.genRanHex(64);
+    let seedBuffer = Buffer.from(randomSeed, 'hex');
 
     let idw = await IdentityWallet.create({
       getPermission: async () => [],
@@ -71,7 +71,11 @@ class App extends Component {
       this.setState({name : data['name']})
     }
 
-    console.log("done");
+    // remember user
+    window.localStorage.setItem("idx-seed", randomSeed);
+    this.setState({seed : randomSeed});
+
+    console.log("Generated Wallet!");
   }
 
   updateName = async(value) => {
@@ -89,6 +93,8 @@ class App extends Component {
     let def = await this.publishIDXConfig();
     console.log(def);
     profileID = def.definitions.basicProfile;
+    let seed = window.localStorage.getItem("idx-seed");
+    if (seed) { await this.generateIdentityWallet(seed); }
     this.setState({showMainLoader : false});
     console.log("Initial Setup Complete")
   }
@@ -106,11 +112,12 @@ class App extends Component {
               </div>
       )}
 
-      <p>Connected DID : {this.state.did}</p>
+      <p>Connected DID : {this.state.did ? this.state.did : "No DID found, generate new"}</p>
 
-      <button onClick={() => this.generateIdentityWallet()}>Create a new DID wallet</button>
-      <input value={this.state.seed} onChange={e => this.setState({seed : e.target.value})}/>
-
+      {this.state && !this.state.did && (
+        <button onClick={() => this.generateIdentityWallet()}>Create a new DID wallet</button>
+      )}
+      
       {this.state && this.state.did && (
         <div>
         <h3>Profile Details</h3>
