@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+
+  "name": "Cameo",
+  "description": "Ceramic DID Wallet for Chrome",
+  "version": "0.0.1",
+
+  "browser_action": {
+    "default_popup": "index.html",
+    "default_title": "Cameo"
+  },
+  "icons": {
+    "16": "logo192.png",
+    "48": "logo192.png",
+    "128": "logo192.png"
+  },
+  "content_security_policy": "script-src 'self' 'sha256-AeVIsVs=....'; object-src 'self'", 
+  "permissions": [
+  ]
+}
