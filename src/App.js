@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import "./App.css";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Loader from 'react-loader-spinner';
 import { publishIDXConfig, schemas, createDefinition } from '@ceramicstudio/idx-tools';
 import { IDX } from '@ceramicstudio/idx';
 import CeramicClient from '@ceramicnetwork/ceramic-http-client'
@@ -7,6 +10,7 @@ import IdentityWallet from 'identity-wallet'
 const API_URL = "http://localhost:7007";
 var ceramic = "";
 var profileID = "";
+var idx = "";
 
 class App extends Component {
 
@@ -14,7 +18,10 @@ class App extends Component {
     idw : "",
     ceramic_url : "",
     did : "",
-    seed : "06be7d9853096fca06d6da9268a8a66ecaab2a7249ccd63c70fead97aafefa02" // need to change from default value
+    seed : "06be7d9853096fca06d6da9268a8a66ecaab2a7249ccd63c70fead97aafefa01", // need to change from default value
+    name : "",
+    showMainLoader : true,
+    showSubLoader : false
   }
 
   publishIDXConfig = async() => {
@@ -45,10 +52,9 @@ class App extends Component {
     await ceramic.setDIDProvider(idw.getDidProvider());
 
     console.log(profileID);
-    const idx = new IDX({ ceramic, definitions: { profile: profileID } });
+    idx = new IDX({ ceramic, definitions: { profile: profileID } });
 
     console.log(idx);
-
     // const defId = await createDefinition(ceramic, {
     //   name : 'app:profile',
     //   schema : schemas.BasicProfile
@@ -56,21 +62,26 @@ class App extends Component {
 
     console.log(idx.did._id);
 
-    // console.log(defId);
+    let data = await idx.get('profile');
 
-    console.log("Setting name");
-
-    //await idx.set('profile', { name: 'Stanly' });
-
-    //let d = await idx.get('profile');
-
-    //console.log(d);
-
-    console.log("done");
+    console.log(data);
 
     this.setState({did : idx.did._id})
+    if (data){
+      this.setState({name : data['name']})
+    }
 
+    console.log("done");
+  }
 
+  updateName = async(value) => {
+    this.setState({showSubLoader : true});
+    console.log(`Setting name to ${value}`);
+    await idx.set('profile', { name: value });
+    this.setState({name : value})
+    console.log("Update Complete!")
+    toast.success("Profile Updated!");
+    this.setState({showSubLoader : false});
   }
 
   async componentDidMount(){
@@ -78,19 +89,41 @@ class App extends Component {
     let def = await this.publishIDXConfig();
     console.log(def);
     profileID = def.definitions.basicProfile;
+    this.setState({showMainLoader : false});
     console.log("Initial Setup Complete")
   }
 
   render() {
   return (
     <div className="App">
-      <p>Ceramic Network URL : {this.state.ceramic_url}</p>
-      <h1>DID Wallet</h1>
+      <ToastContainer />
+      <p>Ceramic Network : {this.state.ceramic_url}</p>
+      <h3>Ceramic DID Wallet</h3>
+      {this.state && this.state.showMainLoader && (
+              <div>
+                <Loader type="ThreeDots" color="#3f51b5" height="20" width="30"/>
+                <small>Loading network configs..</small>
+              </div>
+      )}
 
       <p>Connected DID : {this.state.did}</p>
 
       <button onClick={() => this.generateIdentityWallet()}>Create a new DID wallet</button>
       <input value={this.state.seed} onChange={e => this.setState({seed : e.target.value})}/>
+
+      {this.state && this.state.did && (
+        <div>
+        <h3>Profile Details</h3>
+        {this.state && this.state.showSubLoader && (
+              <div>
+                <Loader type="ThreeDots" color="#3f51b5" height="20" width="30"/>
+                <small>Processing..</small>
+              </div>
+        )}
+        <p>Name : <input value={this.state.name} onChange={e => this.setState({name : e.target.value})}/></p>
+        <button onClick={() => this.updateName(this.state.name)}>Update Profile</button>
+        </div>
+      )}
 
     </div>
   );

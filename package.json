@@ -3,17 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "react-scripts": "3.4.3",
     "@ceramicnetwork/ceramic-common": "^0.10.1",
     "@ceramicnetwork/ceramic-http-client": "^0.6.5",
     "@ceramicstudio/idx": "^0.2.1",
     "@ceramicstudio/idx-tools": "^0.2.2",
-    "identity-wallet": "^2.0.0-alpha.13"
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "identity-wallet": "^2.0.0-alpha.13",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-loader-spinner": "^3.1.14",
+    "react-scripts": "3.4.3",
+    "react-toastify": "^6.0.9"
   },
   "repository": {
     "type": "git",
