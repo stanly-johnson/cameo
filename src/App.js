@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import "./App.css";
+import { Button, Jumbotron, Container, InputGroup, FormControl } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import "./App.css";
+import logo from "./logo.png";
 import Loader from 'react-loader-spinner';
 import { publishIDXConfig, schemas, createDefinition } from '@ceramicstudio/idx-tools';
 import { IDX } from '@ceramicstudio/idx';
@@ -20,8 +22,12 @@ class App extends Component {
     did : "",
     seed : "", // need to change from default value
     name : "",
+    image :"",
+    showGreeting : false,
+    showProfileImg : false,
     showMainLoader : true,
-    showSubLoader : false
+    showSubLoader : false,
+    showDidTab : false
   }
 
   publishIDXConfig = async() => {
@@ -36,6 +42,11 @@ class App extends Component {
 
   genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 
+  handleGenerateIdentityWallet = async() => {
+    this.setState({showSubLoader : true});
+    await this.generateIdentityWallet();
+    this.setState({showSubLoader : false});
+  }
 
   generateIdentityWallet = async (seed) => {
     // create new did from random seed
@@ -55,10 +66,6 @@ class App extends Component {
     idx = new IDX({ ceramic, definitions: { profile: profileID } });
 
     console.log(idx);
-    // const defId = await createDefinition(ceramic, {
-    //   name : 'app:profile',
-    //   schema : schemas.BasicProfile
-    // });
 
     console.log(idx.did._id);
 
@@ -68,7 +75,11 @@ class App extends Component {
 
     this.setState({did : idx.did._id})
     if (data){
-      this.setState({name : data['name']})
+      this.setState({name : data['name'], showGreeting : true});
+
+      if (data['image']){
+        this.setState({image : data['image'], showProfileImg : true});
+      }
     }
 
     // remember user
@@ -78,15 +89,22 @@ class App extends Component {
     console.log("Generated Wallet!");
   }
 
-  updateName = async(value) => {
+  updateName = async(value, imgurl) => {
     this.setState({showSubLoader : true});
     console.log(`Setting name to ${value}`);
-    await idx.set('profile', { name: value });
+    await idx.set('profile', { name: value, image: imgurl });
     this.setState({name : value})
     console.log("Update Complete!")
     toast.success("Profile Updated!");
     this.setState({showSubLoader : false});
   }
+
+  // handleFile = async (path) => {
+  //   console.log(path);
+  //   let result = await 
+  //   console.log(result);
+  //   return;
+  // }
 
   async componentDidMount(){
     this.connectToCeramic();
@@ -95,7 +113,7 @@ class App extends Component {
     profileID = def.definitions.basicProfile;
     let seed = window.localStorage.getItem("idx-seed");
     if (seed) { await this.generateIdentityWallet(seed); }
-    this.setState({showMainLoader : false});
+    this.setState({showMainLoader : false, showDidTab : true});
     console.log("Initial Setup Complete")
   }
 
@@ -103,34 +121,57 @@ class App extends Component {
   return (
     <div className="App">
       <ToastContainer />
+      <Jumbotron>
+      <Container>
       <p>Ceramic Network : {this.state.ceramic_url}</p>
-      <h3>Ceramic DID Wallet</h3>
-      {this.state && this.state.showMainLoader && (
+      <h1><img src={this.state.showProfileImg ? this.state.image : logo} width="100" height="100" borderRadius="20" resizeMode="cover" overflow='hidden'/></h1>
+        
+        {this.state && this.state.showMainLoader && (
               <div>
                 <Loader type="ThreeDots" color="#3f51b5" height="20" width="30"/>
                 <small>Loading network configs..</small>
               </div>
       )}
+      </Container>
+      </Jumbotron>
 
-      <p>Connected DID : {this.state.did ? this.state.did : "No DID found, generate new"}</p>
+      {this.state && this.state.showGreeting && (
+        <p>Hi, {this.state.name}</p>
+      )}
+      
+      {this.state && this.state.showDidTab && (
+        <div>
+        <small>Your DID : {this.state.did ? this.state.did.substring(0,15) + "..." + this.state.did.slice(this.state.did.length - 5) : "No DID found"}</small>
+        <hr/>
+        </div>
+      )}
+      
 
-      {this.state && !this.state.did && (
-        <button onClick={() => this.generateIdentityWallet()}>Create a new DID wallet</button>
+      {this.state && this.state.showDidTab && !this.state.did && (
+        <Button type="submit" onClick={() => this.handleGenerateIdentityWallet()}>Create a new DID wallet</Button>
       )}
       
       {this.state && this.state.did && (
         <div>
-        <h3>Profile Details</h3>
+        <h4>Your Profile</h4>
         {this.state && this.state.showSubLoader && (
               <div>
                 <Loader type="ThreeDots" color="#3f51b5" height="20" width="30"/>
                 <small>Processing..</small>
               </div>
         )}
+        <hr />
+        
         <p>Name : <input value={this.state.name} onChange={e => this.setState({name : e.target.value})}/></p>
-        <button onClick={() => this.updateName(this.state.name)}>Update Profile</button>
+        
+        <p>Image : <input value={this.state.image} onChange={e => this.setState({image : e.target.value})}/></p>
+        
+        <br />
+        <Button class="primary" onClick={() => this.updateName(this.state.name, this.state.image)}>Update Profile</Button>
         </div>
       )}
+
+      <br/><br/>
 
     </div>
   );
