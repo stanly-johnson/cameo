@@ -167,7 +167,7 @@ class App extends Component {
         <p>Image : <input value={this.state.image} onChange={e => this.setState({image : e.target.value})}/></p>
         
         <br />
-        <Button class="primary" onClick={() => this.updateName(this.state.name, this.state.image)}>Update Profile</Button>
+        <Button className="primary" onClick={() => this.updateName(this.state.name, this.state.image)}>Update Profile</Button>
         </div>
       )}
 
