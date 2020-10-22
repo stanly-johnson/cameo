@@ -18,6 +18,11 @@ img {
   border-radius: 50%;
 }
 
+input {
+  margin : 2px;
+}
+
+
 .small {
   font-size: 2px;
 }
