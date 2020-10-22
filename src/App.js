@@ -14,6 +14,7 @@ var ceramic = "";
 var profileID = "";
 var idx = "";
 
+/*global chrome*/
 class App extends Component {
 
   state = {
@@ -99,6 +100,19 @@ class App extends Component {
     this.setState({showSubLoader : false});
   }
 
+  executeChromeScript = () => {
+    const config = {
+      image: 'imageUrl',
+      name: "Mathew Joseph"
+    }
+    chrome.tabs.executeScript({
+      code: 'var config = ' + JSON.stringify(config)
+    }, function() {
+      chrome.tabs.executeScript({
+        file: 'cameolib/cameolib.js'
+      });
+    })
+  }
   // handleFile = async (path) => {
   //   console.log(path);
   //   let result = await 
@@ -148,7 +162,10 @@ class App extends Component {
       
 
       {this.state && this.state.showDidTab && !this.state.did && (
+        <>
         <Button type="submit" onClick={() => this.handleGenerateIdentityWallet()}>Create a new DID wallet</Button>
+        <Button type="button" onClick={this.executeChromeScript}>Execute Script</Button>
+        </>
       )}
       
       {this.state && this.state.did && (
@@ -168,6 +185,7 @@ class App extends Component {
         
         <br />
         <Button className="primary" onClick={() => this.updateName(this.state.name, this.state.image)}>Update Profile</Button>
+        <Button className="primary" onClick={this.executeChromeScript}>Execute Script</Button>
         </div>
       )}
 
