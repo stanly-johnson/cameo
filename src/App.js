@@ -12,7 +12,7 @@ import IdentityWallet from 'identity-wallet'
 const API_URL = "http://localhost:7007";
 var ceramic = "";
 var profileID = "";
-var idx = "";
+window.idx = "";
 
 class App extends Component {
 
@@ -23,6 +23,7 @@ class App extends Component {
     seed : "", // need to change from default value
     name : "",
     image :"",
+    eth : "",
     showGreeting : false,
     showProfileImg : false,
     showMainLoader : true,
@@ -63,22 +64,26 @@ class App extends Component {
     await ceramic.setDIDProvider(idw.getDidProvider());
 
     console.log(profileID);
-    idx = new IDX({ ceramic, definitions: { profile: profileID } });
+    window.idx = new IDX({ ceramic, definitions: { profile: profileID } });
 
-    console.log(idx);
+    console.log(window.idx);
 
-    console.log(idx.did._id);
+    console.log(window.idx.did._id);
 
-    let data = await idx.get('profile');
+    let data = await window.idx.get('profile');
 
     console.log(data);
 
-    this.setState({did : idx.did._id})
+    this.setState({did : window.idx.did._id})
     if (data){
       this.setState({name : data['name'], showGreeting : true});
 
       if (data['image']){
         this.setState({image : data['image'], showProfileImg : true});
+      }
+
+      if (data['eth']){
+        this.setState({eth : data['eth']});
       }
     }
 
@@ -89,10 +94,10 @@ class App extends Component {
     console.log("Generated Wallet!");
   }
 
-  updateName = async(value, imgurl) => {
+  updateName = async(value, imgurl, eth_addr) => {
     this.setState({showSubLoader : true});
     console.log(`Setting name to ${value}`);
-    await idx.set('profile', { name: value, image: imgurl });
+    await window.idx.set('profile', { name: value, image: imgurl, eth: eth_addr });
     this.setState({name : value})
     console.log("Update Complete!")
     toast.success("Profile Updated!");
@@ -124,7 +129,7 @@ class App extends Component {
       <Jumbotron>
       <Container>
       <p>Ceramic Network : {this.state.ceramic_url}</p>
-      <h1><img src={this.state.showProfileImg ? this.state.image : logo} width="100" height="100" borderRadius="20" resizeMode="cover" overflow='hidden'/></h1>
+      <h1><img src={this.state.showProfileImg ? this.state.image : logo} width="100" height="100"/></h1>
         
         {this.state && this.state.showMainLoader && (
               <div>
@@ -165,9 +170,11 @@ class App extends Component {
         <p>Name : <input value={this.state.name} onChange={e => this.setState({name : e.target.value})}/></p>
         
         <p>Image : <input value={this.state.image} onChange={e => this.setState({image : e.target.value})}/></p>
+
+        <p>Eth Addr : <input value={this.state.eth} onChange={e => this.setState({eth : e.target.value})}/></p>
         
         <br />
-        <Button class="primary" onClick={() => this.updateName(this.state.name, this.state.image)}>Update Profile</Button>
+        <Button className="primary" onClick={() => this.updateName(this.state.name, this.state.image, this.state.eth)}>Update Profile</Button>
         </div>
       )}
 

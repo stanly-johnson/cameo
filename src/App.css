@@ -14,6 +14,10 @@
   }
 }
 
+img {
+  border-radius: 50%;
+}
+
 .small {
   font-size: 2px;
 }

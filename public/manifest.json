@@ -14,6 +14,15 @@
     "48": "logo.png",
     "128": "logo.png"
   },
-  "content_security_policy": "script-src 'self' 'sha256-AeVIsVsb..'; object-src 'self'", 
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["/static/js/main.b1ce4942.chunk.js", "content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+       "/static/js/main.b1ce4942.chunk.js"
+  ],
+  "content_security_policy": "script-src 'self' 'sha256-AeVI...'; object-src 'self'", 
   "permissions": ["http://localhost/*"]
 }
