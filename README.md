@@ -1,6 +1,6 @@
 ## Cameo - DID plugin for chrome
 
-Manage your identity on the Ceramic Network using Cameo. Submission for ETHOnline Oct 2020.
+Manage your identity on the Ceramic Network using Cameo. [Submission for ETHOnline Oct 2020](https://hack.ethglobal.co/showcase/cameo-recbTOi7wBh2o9Iyx)
 
 Demo Video : https://www.youtube.com/watch?v=dQ4KovmxEZY
 
