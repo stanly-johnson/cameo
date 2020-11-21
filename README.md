@@ -14,9 +14,12 @@ Required node version - v14.9.0
 
 - Clone the repo
 - Run `npm install`
-- Run `npm run build`
-- Load `build` folder to Chrome extension
+- Run `npm start`
 
+### Build as Chrome extension
+- Run `npm run build`
+- Open Chrome and navigate to `chrome://extensions/`
+- Select `Load Unpacked` and upload the `build` folder
 
 ### Links
 IDX library guide - https://idx.xyz/docs/libs-getting-started/
